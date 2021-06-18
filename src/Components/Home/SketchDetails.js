@@ -95,7 +95,8 @@ class SketchDetail extends Component {
                         <Grid item xs={6} md={6}>
                             <Card style={{ height: `${this.state.videoHeight}px`, maxHeight: "40vh" }} ref={this.video}>
                                 <iframe
-                                    src={`${process.env.REACT_APP_CAMERA_SERVER}/player.html`}
+                                    // src={`${process.env.REACT_APP_CAMERA_SERVER}/player.html`}
+                                    src={`${process.env.REACT_APP_TWITCH_STREAM}`}
                                     name="restreamer-player"
                                     width="100%"
                                     height="100%"

@@ -189,7 +189,8 @@ class Home extends Component {
                             {this.props.sketchDetail.show ?
                                 <SketchDetail />
                                 : <iframe
-                                    src={`${process.env.REACT_APP_CAMERA_SERVER}/player.html`}
+                                    // src={`${process.env.REACT_APP_CAMERA_SERVER}/player.html`}
+                                    src={`${process.env.REACT_APP_TWITCH_STREAM}`}
                                     name="restreamer-player"
                                     width="100%"
                                     height="100%"
