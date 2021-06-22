@@ -6,7 +6,7 @@ import { Card } from '@material-ui/core';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ListItem from '@material-ui/core/ListItem';
-import socket from '../../helpers/socketConnection';
+// import socket from '../../helpers/socketConnection';
 
 import ReactLoading from 'react-loading';
 
@@ -16,9 +16,9 @@ function Queue() {
     const [queue, setQueue] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
 
-    React.useEffect(() => {
-        socket.on("queueUpdate", updateData);
-    });
+    // React.useEffect(() => {
+    //     socket.on("queueUpdate", updateData);
+    // });
 
     const updateData = data => {
         setQueue(data);
