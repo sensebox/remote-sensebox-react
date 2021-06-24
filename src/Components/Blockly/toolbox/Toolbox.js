@@ -39,13 +39,13 @@ class Toolbox extends React.Component {
         return (
             <xml xmlns="https://developers.google.com/blockly/xml" id="blockly" style={{ display: 'none' }} ref={this.props.toolbox}>
                 <Category name={Blockly.Msg.toolbox_sensors} colour={getColour().sensebox}>
-                    {/* <Block type="sensebox_sensor_temp_hum" /> */}
+                    <Block type="sensebox_sensor_temp_hum" />
                     <Block type="sensebox_sensor_uv_light" />
                     {/* <Block type="sensebox_sensor_bmx055_accelerometer" /> */}
                     {/* <Block type="sensebox_sensor_sds011" /> */}
-                    <Block type="sensebox_sensor_pressure" />
+                    {/* <Block type="sensebox_sensor_pressure" /> */}
                     {/* <Block type="sensebox_sensor_bme680_bsec" /> */}
-                    {/* <Block type="sensebox_scd30" /> */}
+                    <Block type="sensebox_scd30" />
                     {/* <Block type="sensebox_gps" /> */}
                     {/* <Block type="sensebox_sensor_ultrasonic_ranger" /> */}
                     {/* <Block type="sensebox_sensor_sound" /> */}
@@ -57,7 +57,7 @@ class Toolbox extends React.Component {
                 </Category >
                 <Category name="LED" colour={getColour().sensebox}>
                     {/* <Block type="sensebox_rgb_led"></Block> */}
-                    {/* <Block type="sensebox_led" /> */}
+                    <Block type="sensebox_led" />
                     <Block type="sensebox_ws2818_led_init">
                         <Value name="NUMBER">
                             <Block type="math_number">
