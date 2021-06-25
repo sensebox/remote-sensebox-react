@@ -127,7 +127,7 @@ class Navbar extends Component {
             </div>
           </div>
           <List>
-            {[{ text: "Home", icon: faHome, link: "/" }, { text: "Blockly", icon: faLayerGroup, link: "/blockly" }].map((item, index) => {
+            {[{ text: "Home", icon: faHome, link: "/" }, { text: "Blockly", icon: faLayerGroup, link: "/blockly" }, { text: "Gallerie", icon: faLayerGroup, link: "/projects" }].map((item, index) => {
               if (item.restriction || Object.keys(item).filter(attribute => attribute === 'restriction').length === 0) {
                 return (
                   <Link to={item.link} key={index} style={{ textDecoration: 'none', color: 'inherit' }}>

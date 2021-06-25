@@ -12,6 +12,7 @@ import BlocklyEditor from '../Editor';
 import NotFound from '../NotFound';
 import Settings from '../Settings/Settings';
 import Project from '../Project/Project';
+import ProjectHome from '../Project/ProjectHome';
 import Impressum from '../Impressum';
 import Privacy from '../Privacy';
 import News from '../News';
@@ -34,6 +35,12 @@ class Routes extends Component {
             <BlocklyEditor />
           </PublicRoute>
           <PublicRoute path="/blockly/:shareId" exact>
+            <Project />
+          </PublicRoute>
+          <PublicRoute path="/projects" exact>
+            <ProjectHome />
+          </PublicRoute>
+          <PublicRoute path="/project/:projectId" exact>
             <Project />
           </PublicRoute>
           {/* settings */}
