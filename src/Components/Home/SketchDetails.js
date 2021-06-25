@@ -15,6 +15,8 @@ import { saveAs } from 'file-saver';
 import { detectWhitespacesAndReturnReadableResult } from '../../helpers/whitespace';
 
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+
 import { Card, Fab } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -95,7 +97,8 @@ class SketchDetail extends Component {
                         <Grid item xs={6} md={6}>
                             <Card style={{ height: `${this.state.videoHeight}px`, maxHeight: "40vh" }} ref={this.video}>
                                 <iframe
-                                    src={`${process.env.REACT_APP_CAMERA_SERVER}/player.html`}
+                                    // src={`${process.env.REACT_APP_CAMERA_SERVER}/player.html`}
+                                    src={`${process.env.REACT_APP_TWITCH_STREAM}`}
                                     name="restreamer-player"
                                     width="100%"
                                     height="100%"
@@ -107,8 +110,11 @@ class SketchDetail extends Component {
                                     title="stream"
                                 ></iframe>
                             </Card>
-                            <Card style={{ padding: "1vh 1vw", height: this.state.videoHeight < 300 ? "12vh" : "6vh", marginTop: "2.5vh", }}>
-                                <Grid
+                            <Card style={{ padding: "1vh 1vw", marginTop: "2.5vh", }}>
+                            <Box display="flex" flexWrap="wrap" justifyContent="space-around" alignItems="center">
+
+                                
+                                {/* <Grid
                                     container
                                     direction="row"
                                     justify="space-evenly"
@@ -118,62 +124,62 @@ class SketchDetail extends Component {
                                     }}
                                 >
 
-                                    <Grid item md={6} lg={this.props.sketchDetail.blockly ? 3 : 6} style={{ position: 'relative' }}>
+                                    <Grid item md={6} lg={this.props.sketchDetail.blockly ? 3 : 6} style={{ position: 'relative' }}> */}
                                         <Fab
                                             variant="extended"
                                             onClick={() => this.downloadInoFile()}
-                                            style={{
-                                                position: 'absolute', left: '50%', top: '50%',
-                                                transform: 'translate(-50%, -50%)'
-                                            }}
+                                            // style={{
+                                            //     position: 'absolute', left: '50%', top: '50%',
+                                            //     transform: 'translate(-50%, -50%)'
+                                            // }}
 
                                         >
                                             Arduino
                                         </Fab>
-                                        {this.props.sketchDetail.blockly && this.state.videoHeight < 300 ?
-                                            <Grid item md={6} lg={3} style={{ position: 'relative' }}>
+                                        {/* {this.props.sketchDetail.blockly && this.state.videoHeight < 300 ?
+                                            <Grid item md={6} lg={3} style={{ position: 'relative' }}> */}
                                                 <Fab
                                                     variant="extended"
                                                     onClick={() => this.downloadXmlFile()}
-                                                    style={{
-                                                        position: 'absolute', left: '50%', top: '50%',
-                                                        transform: 'translate(-50%, -50%)'
-                                                    }}
+                                                    // style={{
+                                                    //     position: 'absolute', left: '50%', top: '50%',
+                                                    //     transform: 'translate(-50%, -50%)'
+                                                    // }}
                                                 >
                                                     <FontAwesomeIcon icon={faFileDownload} style={{ marginRight: '0.5vw' }} size="md" />
                                                 XML
                                             </Fab>
-                                            </Grid>
+                                            {/* </Grid>
                                             : null
                                         }
                                     </Grid>
                                     {this.props.sketchDetail.blockly && this.state.videoHeight >= 300 ?
-                                        <Grid item md={6} lg={3} style={{ position: 'relative' }}>
+                                        <Grid item md={6} lg={3} style={{ position: 'relative' }}> */}
                                             <Fab
                                                 variant="extended"
                                                 onClick={() => this.downloadXmlFile()}
-                                                style={{
-                                                    position: 'absolute', left: '50%', top: '50%',
-                                                    transform: 'translate(-50%, -50%)'
-                                                }}
+                                                // style={{
+                                                //     position: 'absolute', left: '50%', top: '50%',
+                                                //     transform: 'translate(-50%, -50%)'
+                                                // }}
                                             >
                                                 <FontAwesomeIcon icon={faFileDownload} style={{ marginRight: '0.5vw' }} size="md" />
                                                 XML
                                             </Fab>
-                                        </Grid>
+                                        {/* </Grid>
                                         : null
                                     }
                                     {this.props.sketchDetail.blockly && this.state.videoHeight >= 300 ?
-                                        <Grid item md={6} lg={3} style={{ position: 'relative' }}>
+                                        <Grid item md={6} lg={3} style={{ position: 'relative' }}> */}
                                             <Tooltip title="Öffne das Programm in der Blockly-Umgebung" arrow>
                                                 <Link to={`/blockly/${this.props.sketchDetail.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                                     <Fab
                                                         variant="extended"
                                                         color="primary"
-                                                        style={{
-                                                            position: 'absolute', left: '50%', top: '50%',
-                                                            transform: 'translate(-50%, -50%)'
-                                                        }}
+                                                        // style={{
+                                                        //     position: 'absolute', left: '50%', top: '50%',
+                                                        //     transform: 'translate(-50%, -50%)'
+                                                        // }}
 
                                                     >
                                                         <LaunchIcon style={{ marginRight: "1vw" }} />
@@ -181,7 +187,7 @@ class SketchDetail extends Component {
                                                     </Fab>
                                                 </Link>
                                             </Tooltip>
-                                        </Grid>
+                                        {/* </Grid>
                                         : null
                                     }
                                     <Grid item md={6} lg={this.props.sketchDetail.blockly ? 3 : 6} style={{ position: 'relative' }}>
@@ -190,16 +196,16 @@ class SketchDetail extends Component {
                                             direction="column"
                                             justify="center"
                                             alignItems="center"
-                                        >
-                                            <Grid item style={{ height: "48px", width: "100%" }}>
+                                        > */}
+                                            {/* <Grid item style={{ height: "48px", width: "100%" }}> */}
                                                 <SketchRestart
                                                     title={this.props.sketchDetail.name}
                                                     arduino={this.props.sketchDetail.code.sketch}
                                                     xml={this.props.sketchDetail.code.xml}
                                                 />
-                                            </Grid>
+                                            {/* </Grid> */}
 
-                                            {this.props.sketchDetail.blockly && this.state.videoHeight < 300 ?
+                                            {/* {this.props.sketchDetail.blockly && this.state.videoHeight < 300 ?
                                                 <Grid item style={{ height: "48px", wisth: "100%" }}>
                                                     <Grid item md={6} lg={3} style={{ position: 'relative' }}>
                                                         <Tooltip title="Öffne das Programm in der Blockly-Umgebung" arrow>
@@ -224,8 +230,9 @@ class SketchDetail extends Component {
                                             }
                                         </Grid>
 
-                                    </Grid>
-                                </Grid>
+                                    </Grid> */}
+                                {/* </Grid> */}
+                                </Box>
                             </Card>
                         </Grid>
                         <Grid item xs={6} md={6}>
@@ -371,7 +378,7 @@ function SketchRestart(props) {
 
     return (
         <Tooltip title="Lade das Programm erneut auf die senseBox" arrow>
-            <div className={classes.root}>
+            <div>
                 <div className={classes.wrapper}>
                     <Fab
                         aria-label="save"
