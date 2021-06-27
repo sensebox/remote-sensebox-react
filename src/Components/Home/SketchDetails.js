@@ -13,6 +13,7 @@ import "prismjs/plugins/line-numbers/prism-line-numbers.css";
 import { saveAs } from 'file-saver';
 
 import { detectWhitespacesAndReturnReadableResult } from '../../helpers/whitespace';
+import socket from '../../helpers/socketConnection';
 
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -29,8 +30,13 @@ import { green, red } from '@material-ui/core/colors';
 import LaunchIcon from '@material-ui/icons/Launch';
 import CheckIcon from '@material-ui/icons/Check';
 import ReplayIcon from '@material-ui/icons/Replay';
-import { faFileDownload } from "@fortawesome/free-solid-svg-icons";
+import { faFileDownload, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import * as Blockly from 'blockly/core';
+import Snackbar from '../Snackbar';
+
+import BlocklyWindow from '../Blockly/BlocklyWindow';
 
 class SketchDetail extends Component {
     constructor(props) {
@@ -42,6 +48,10 @@ class SketchDetail extends Component {
             open: false,
             title: "",
             content: "",
+            snackbar: false,
+            type: '',
+            message: '',
+            serial: '',
         };
         this.video = React.createRef();
     }
@@ -51,7 +61,17 @@ class SketchDetail extends Component {
             videoWidth: this.video.current.offsetHeight,
             videoHeight: this.video.current.offsetWidth * 0.5625
         });
-        console.log(this.props.sketchDetail.error_msg)
+        console.log(this.props.sketchDetail.error_msg);
+
+        socket.on("senseboxSerial", this.updateSerial);
+    }
+
+    updateSerial = data => {
+        this.setState({ serial: data });
+    }
+
+    componentWillUnmount() {
+        socket.off("senseboxSerial");
     }
 
     downloadXmlFile = () => {
@@ -68,6 +88,11 @@ class SketchDetail extends Component {
         fileName = `${fileName}.ino`
         var blob = new Blob([code], { type: 'text/x-arduino' });
         saveAs(blob, fileName);
+    }
+
+    copyCode = () => {
+        navigator.clipboard.writeText(this.props.sketchDetail.code.sketch);
+        this.setState({ snackbar: true, type: 'success', key: Date.now(), message: Blockly.Msg.messages_copy_code });
     }
 
     render() {
@@ -97,9 +122,8 @@ class SketchDetail extends Component {
                         <Grid item xs={6} md={6}>
                             <Card style={{ height: `${this.state.videoHeight}px`, maxHeight: "40vh" }} ref={this.video}>
                                 <iframe
-                                    // src={`${process.env.REACT_APP_CAMERA_SERVER}/player.html`}
-                                    src={`${process.env.REACT_APP_TWITCH_STREAM}`}
-                                    name="restreamer-player"
+                                    src={this.props.camUrl}
+                                    name="cam"
                                     width="100%"
                                     height="100%"
                                     scrolling="no"
@@ -155,7 +179,7 @@ class SketchDetail extends Component {
                                     </Grid>
                                     {this.props.sketchDetail.blockly && this.state.videoHeight >= 300 ?
                                         <Grid item md={6} lg={3} style={{ position: 'relative' }}> */}
-                                            <Fab
+                                            {/* <Fab
                                                 variant="extended"
                                                 onClick={() => this.downloadXmlFile()}
                                                 // style={{
@@ -165,7 +189,7 @@ class SketchDetail extends Component {
                                             >
                                                 <FontAwesomeIcon icon={faFileDownload} style={{ marginRight: '0.5vw' }} size="md" />
                                                 XML
-                                            </Fab>
+                                            </Fab> */}
                                         {/* </Grid>
                                         : null
                                     }
@@ -207,7 +231,6 @@ class SketchDetail extends Component {
 
                                             {/* {this.props.sketchDetail.blockly && this.state.videoHeight < 300 ?
                                                 <Grid item style={{ height: "48px", wisth: "100%" }}>
-                                                    <Grid item md={6} lg={3} style={{ position: 'relative' }}>
                                                         <Tooltip title="Öffne das Programm in der Blockly-Umgebung" arrow>
                                                             <Link to={`/blockly/${this.props.sketchDetail.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                                                 <Fab
@@ -224,7 +247,6 @@ class SketchDetail extends Component {
                                                     </Fab>
                                                             </Link>
                                                         </Tooltip>
-                                                    </Grid>
                                                 </Grid>
                                                 : null
                                             }
@@ -235,19 +257,60 @@ class SketchDetail extends Component {
                                 </Box>
                             </Card>
                         </Grid>
-                        <Grid item xs={6} md={6}>
+                        <Grid item xs={6} md={6} style={{ position: 'relative' }}>
+                            <Tooltip title="Arduino Code kopieren" arrow>
+                                <IconButton
+                                    style={{
+                                        width: '40px',
+                                        height: '40px',
+                                        position: 'absolute',
+                                        top: -8,
+                                        right: 20,
+                                        zIndex: 2,
+                                        backgroundColor: 'white',
+                                        color: 'green',
+                                        border: '1px solid #e3e3e3',
+                                        '&:hover': {
+                                            backgroundColor: 'primary',
+                                            color: 'white',
+                                            border: '1px solid primary'
+                                        }
+                                    }}
+                                    onClick={() => this.copyCode()}
+                                >
+                                    <FontAwesomeIcon icon={faCopy} size="xs" />
+                                </IconButton>
+                            </Tooltip>
+
                             <Card style={{ height: `calc(${this.state.videoHeight}px + 10.5vh)`, maxHeight: "50.5vh" }}>
                                 <Code code={this.props.sketchDetail.code.sketch} />
+                                <BlocklyWindow readonly={true} />
                             </Card>
                         </Grid>
                         <Grid item xs={12} md={12}>
                             <Card style={{ height: "20vh" }}>
-                                {this.props.sketchDetail.error ? <Code code={this.props.sketchDetail.error_msg} /> : <Code code={this.props.sketchDetail.finished ? this.props.sketchDetail.serial !== null ? this.props.sketchDetail.serial : "Es sind keine Daten für die Serielle-Konsole vorhanden." : "Die Serielle Konsole ist erst nach dem Ausführen des Sketches verfügbar"} />}
+                                {this.props.sketchDetail.error ?
+                                    <Code code={this.props.sketchDetail.error_msg} /> :
+                                    <Code
+                                        code={
+                                            this.props.sketchDetail.finished ?
+                                                this.props.sketchDetail.serial !== null ?
+                                                    this.props.sketchDetail.serial.replace(/\r/g, "\n") : "Es sind keine Daten für die Serielle-Konsole vorhanden." :
+                                                this.props.sketchDetail.running ? this.state.serial.replace(/\r/g, "\n") : "Dieser Sketch wurde noch nicht auf die senseBox hochgeladen."
+                                        }
+                                    />
+                                }
                             </Card>
                         </Grid>
                     </Grid>
                 </div>
-            </div >
+                <Snackbar
+                    open={this.state.snackbar}
+                    message={this.state.message}
+                    type={this.state.type}
+                    key={this.state.key}
+                />
+            </div>
         )
     }
 }
@@ -343,7 +406,7 @@ function SketchRestart(props) {
             if (process.env.React_APP_SAME_SERVER === "true") {
                 fetch(`${window.location.origin}/api/upload`, {
                     method: "POST",
-                    headers: { 'Content-Type': 'application/json', 'deviceID': localStorage.getItem("deviceID") },
+                    headers: { 'Content-Type': 'application/json', 'sessionID': props.sessionID },
                     body: JSON.stringify(data)
                 })
                     .then(() => {
@@ -359,7 +422,7 @@ function SketchRestart(props) {
             } else {
                 fetch(`${process.env.REACT_APP_REMOTE_BACKEND}/api/upload`, {
                     method: "POST",
-                    headers: { 'Content-Type': 'application/json', 'deviceID': localStorage.getItem("deviceID") },
+                    headers: { 'Content-Type': 'application/json', 'sessionID': props.sessionID },
                     body: JSON.stringify(data)
                 })
                     .then(() => {
@@ -398,10 +461,14 @@ function SketchRestart(props) {
 SketchDetail.propTypes = {
     closeDetails: PropTypes.func.isRequired,
     sketchDetail: PropTypes.object.isRequired,
+    sessionID: PropTypes.string,
+    camUrl: PropTypes.string
 }
 
 const mapStateToProps = state => ({
-    sketchDetail: state.sketchDetail
+    sketchDetail: state.sketchDetail,
+    sessionID: state.general.sessionID,
+    camUrl: state.general.camUrl
 });
 
 export default connect(mapStateToProps, { closeDetails })(SketchDetail);

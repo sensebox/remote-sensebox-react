@@ -24,6 +24,8 @@ import * as Blockly from "blockly/core";
 import { faPlus, faFileUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import socket from '../helpers/socketConnection';
+
 const Accordion = withStyles((theme) => ({
     root: {
         border: `1px solid ${theme.palette.secondary.main}`,
@@ -75,7 +77,7 @@ class Home extends Component {
             snackbar: false,
             type: '',
             key: '',
-            message: ''
+            message: '',
         };
         this.myDiv = React.createRef();
         this.liveVideo = React.createRef();
@@ -89,6 +91,22 @@ class Home extends Component {
             videoWidth: this.liveVideo.current.offsetHeight,
             videoHeight: this.liveVideo.current.offsetWidth * 0.5625
         });
+        socket.emit("initialQueue");
+    }
+
+    componentDidUpdate(props, state) {
+        if (this.myDiv.current && this.myDiv.current.offsetHeight !== this.state.componentHeight) {
+            this.setState({ componentHeight: this.myDiv.current.offsetHeight });
+        }
+        if (this.myDiv.current && this.myDiv.current.offsetWidth !== this.state.componentWidth) {
+            this.setState({ componentWidth: this.myDiv.current.offsetWidth });
+        }
+        if (this.liveVideo.current && this.liveVideo.current.offsetWidth !== this.state.videoWidth) {
+            this.setState({
+                videoWidth: this.liveVideo.current.offsetWidth,
+                videoHeight: this.liveVideo.current.offsetWidth * 0.5625
+            });
+        }
     }
 
     onChange = () => {
@@ -188,10 +206,9 @@ class Home extends Component {
                         <Card style={{ height: this.props.sketchDetail.show ? '81vh' : `${this.state.videoHeight}px`, margin: '1vH 0 0 0', overflow: 'hidden', padding: '0px', maxHeight: "88vh" }} ref={this.liveVideo}>
                             {this.props.sketchDetail.show ?
                                 <SketchDetail />
-                                : <iframe
-                                    // src={`${process.env.REACT_APP_CAMERA_SERVER}/player.html`}
-                                    src={`${process.env.REACT_APP_TWITCH_STREAM}`}
-                                    name="restreamer-player"
+                                : <iframe 
+                                    src={this.props.camUrl}
+                                    name="cam"
                                     width="100%"
                                     height="100%"
                                     scrolling="no"
@@ -200,7 +217,7 @@ class Home extends Component {
                                     mozallowfullscreen="true"
                                     allowFullScreen="true"
                                     title="stream"
-                                ></iframe>
+                                />
                             }
                         </Card>
                     </Grid>
@@ -275,7 +292,8 @@ Home.propTypes = {
 
 const mapStateToProps = (state) => ({
     message: state.message,
-    sketchDetail: state.sketchDetail
+    sketchDetail: state.sketchDetail,
+    camUrl: state.general.camUrl
 });
 
 export default connect(mapStateToProps, { openDetails })(Home);

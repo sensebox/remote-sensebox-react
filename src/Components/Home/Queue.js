@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
@@ -6,43 +7,30 @@ import { Card } from '@material-ui/core';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ListItem from '@material-ui/core/ListItem';
+import socket from '../../helpers/socketConnection';
 
 import ReactLoading from 'react-loading';
 
 import * as Blockly from "blockly/core";
 
-function Queue() {
+function Queue(props) {
     const [queue, setQueue] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
-        const timer = setInterval(async function () {
-            var response = null;
-            if (process.env.React_APP_SAME_SERVER === "true") {
-                response = await fetch(`${window.location.origin}/api/queue`, {
-                    method: "GET",
-                    headers: {
-                        deviceID: localStorage.getItem("deviceID").toString(),
-                    },
-                });
-            } else {
-                response = await fetch(`${process.env.REACT_APP_REMOTE_BACKEND}/api/queue`, {
-                    method: "GET",
-                    headers: {
-                        deviceID: localStorage.getItem("deviceID").toString(),
-                    },
-                });
-            }
-            const data = await response.json();
-            setQueue(data.queue);
-            setLoading(false);
-        }, 1000);
+        socket.on("queueUpdate", updateData);
         return () => {
-            clearInterval(timer);
+            socket.off("queueUpdate");
         };
-    }, []);
+    }, [props]);
+
+    const updateData = data => {
+        setQueue(data);
+        setLoading(false);
+    }
+
     return (
-        <div style={{ height: "calc(60vh - 100px)", width: "100%", overflowY: "auto" }}>
+        <div style={{ height: "calc(55vh - 100px)", width: "100%", overflowY: "auto" }}>
             {loading ?
                 <div
                     style={{
@@ -58,7 +46,7 @@ function Queue() {
                         return < QueueObject
                             key={queue_item.id}
                             friendly_name={queue_item.friendly_name}
-                            private={queue_item.private}
+                            private={queue_item.user === props.sessionID}
                             running={queue_item.running}
                             progress={queue_item.progress}
                         />
@@ -132,4 +120,8 @@ class QueueObject extends Component {
     }
 }
 
-export default Queue;
+const mapStateToProps = state => ({
+    sessionID: state.general.sessionID
+});
+
+export default connect(mapStateToProps)(Queue);

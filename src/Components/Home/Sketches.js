@@ -1,44 +1,32 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 
 import SketchObject from './SketchObject';
+import socket from '../../helpers/socketConnection';
 
 import ReactLoading from 'react-loading';
 
 import * as Blockly from "blockly/core";
 
-function Sketches() {
+function Sketches(props) {
     const [sketches, setSketches] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
-        const timer = setInterval(async function () {
-            var response = null;
-            if (process.env.React_APP_SAME_SERVER === "true") {
-                response = await fetch(`${window.location.origin}/api/private-sketches`, {
-                    method: "GET",
-                    headers: {
-                        deviceID: localStorage.getItem("deviceID").toString(),
-                    },
-                });
-            } else {
-                response = await fetch(`${process.env.REACT_APP_REMOTE_BACKEND}/api/private-sketches`, {
-                    method: "GET",
-                    headers: {
-                        deviceID: localStorage.getItem("deviceID").toString(),
-                    },
-                });
-            }
-            const data = await response.json();
-            setSketches(data);
-            setLoading(false);
-        }, 1000);
+        socket.on("privateSketches", updateData);
         return () => {
-            clearInterval(timer);
+            socket.off("privateSketches");
         };
-    }, []);
+    });
+
+    const updateData = data => {
+        setSketches(data);
+        setLoading(false);
+    }
 
     return (
         <div style={{ height: "calc(55vh - 100px)", width: "100%", overflow: "auto" }}>
@@ -62,6 +50,7 @@ function Sketches() {
                             finished={sketch_item.finished}
                             code={sketch_item.code}
                             error={sketch_item.error}
+                            running={sketch_item.running}
                         />
                     })}
                     {sketches && sketches.length === 0 ? <ListItem>{Blockly.Msg.home_private_sketches_EMPTY}</ListItem> : null}
@@ -72,4 +61,12 @@ function Sketches() {
     )
 }
 
-export default Sketches;
+Sketches.propTypes = {
+    sessionID: PropTypes.string,
+};
+
+const mapStateToProps = state => ({
+    sessionID: state.general.sessionID
+});
+
+export default connect(mapStateToProps)(Sketches);
